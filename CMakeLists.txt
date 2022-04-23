@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(canna)
-
-add_executable(canna src/main.c)
+file(GLOB_RECURSE ARIA_SRC "src/*.c")
+add_executable(canna ${ARIA_SRC})
+target_include_directories(canna PUBLIC "include")
