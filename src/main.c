@@ -2,33 +2,30 @@
 
 #include <aria/vm/opcodes.h>
 #include <aria/types/opers.h>
+#include <aria/lexer/parser.h>
+#include <aria/vm/chunk.h>
 
 int main(int argc, char** argv) {
+    aria_chunk chunk;
+    aria_chunk_new(&chunk);
 
-    aria_value constants[] = {
-        ARIA_VALUE_REAL(2)
-    };
+    aria_parser parser;
+    parser.chunk = &chunk;
+    parser.code = "2 + 2 * 2";
 
-    uint8_t program[] = {
-        ARIA_OPCODE_CONST_8, 0,
-        ARIA_OPCODE_CONST_8, 0,
-        ARIA_OPCODE_MUL,
-        ARIA_OPCODE_CONST_8, 0,
-        ARIA_OPCODE_ADD,
-        ARIA_OPCODE_RET,
-    };
+    aria_parse(&parser);
 
 #define ARIA_STACK_SIZE 1024
 
     aria_value stack[ARIA_STACK_SIZE];
     aria_value* sp = stack;
-    uint8_t* pc = program;
+    uint8_t* pc = chunk.program;
 
     int running = 1;
     while (running) {
         switch (*pc) {
             case ARIA_OPCODE_CONST_8:
-                *sp = constants[pc[1]];
+                *sp = chunk.constants[pc[1]];
                 ++sp; pc += 2;
                 break;
             case ARIA_OPCODE_ADD:
